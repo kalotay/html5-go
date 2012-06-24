@@ -4,7 +4,8 @@ function createRow(parentDiv) {
     var i;
     var newPosition;
     for (i = 0; i < BOARD_SIZE; ++i) {
-        newPosition = document.createElement("button");
+        newPosition = document.createElement("img");
+        newPosition.src = "intersect.png";
         parentDiv.appendChild(newPosition);
     }
 }
