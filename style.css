@@ -9,9 +9,8 @@ button {
     width: 35px;
     padding: 0;
     background-image: none;
-    border-width: thin;
     cursor: default;
-    border-color: black;
+    border: thin solid black;
 }
 
 button[value="free"] {
