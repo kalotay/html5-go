@@ -18,6 +18,9 @@ var Turner = (function () {
 
 function onButtonPress(clickEvent) {
     var button = clickEvent.target;
+    if (button.value !== "free") {
+        return;
+    }
     button.value = Turner.get();
     Turner.turn();
 }
