@@ -1,18 +1,31 @@
 div {
     margin: 0;
-    height: 30px;
-}
-
-img {
-    height: 30px;
-    width: 30px;
+    height: 35px;
 }
 
 button {
     border-radius: 50%;
-    height: 30px;
-    width: 30px;
+    height: inherit;
+    width: 35px;
     padding: 0;
-    visibility: hidden;
+    background-image: none;
+    border-width: thin;
+    cursor: default;
+    border-color: black;
 }
 
+button[value="free"] {
+    cursor: pointer;
+    background-image: url("intersect.png");
+    background-color: transparent;
+    background-size: cover;
+    border-color: transparent;
+}
+
+button[value="black"] {
+    background-color: black;
+}
+
+button[value="white"] {
+    background-color: white;
+}
