@@ -37,22 +37,22 @@ function Shape(seedRow, seedColumn, otherShapes) {
 function stoneInShape(row, column) {
 }
 
-Shape.prototype.isStone(row, column) = stoneInShape;
+Shape.prototype.isStone = stoneInShape;
 
 function libertyInShape(row, column) {
 }
 
-Shape.prototype.isLiberty(row, column) = libertyInShape;
+Shape.prototype.isLiberty = libertyInShape;
 
 function addToShape(row, column) {
 }
 
-Shape.prototype.add(row, column) = addToShape;
+Shape.prototype.add = addToShape;
 
 function setLiberties(otherShapes) {
 }
 
-Shape.prototype.setLiberties(otherShapes) = setLiberties;
+Shape.prototype.setLiberties = setLiberties;
 
 function onButtonPress(clickEvent) {
     var button = clickEvent.target;
