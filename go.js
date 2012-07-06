@@ -16,43 +16,50 @@ var Turner = (function () {
     return Turner;
 })()
 
-function Points(seedRows, seedColumns) {
-    this.rows = seedRows;
-    this.columns = seedColumns;
+function IntersectionCollection(seedRow, seedColumn) {
+    this.data = [];
+    this.add(seedRow, seedColumn);
 }
 
-function addPoint(row, column) {
-    this.rows.push(row);
-    this.columns.push(columns);
+IntersectionCollection.rowColumnToIndex = function (row, column) {
+    return BOARD_SIZE * row + column;
+};
+
+IntersectionCollection.indexToRowColumn = function (index) {
+    var column = index % BOARD_SIZE;
+    var row = (index - column) / BOARD_SIZE;
+    return {"row": row, "column": column};
+};
+
+IntersectionCollection.prototype.add = function (row, column) {
+    var index = IntersectionCollection.rowColumnToIndex(row, column)
+    this.data.push(index);
+};
+
+IntersectionCollection.prototype.isEmpty = function () {
+    return this.data.length === 0;
+};
+
+IntersectionCollection.prototype.contains = function (row, column) {
+    var index = IntersectionCollection.rowColumnToIndex(row, column);
+    return this.data.indexOf(index) !== -1;
+};
+
+IntersectionCollection.prototype.remove = function (row, column) {
+    var index = IntersectionCollection.rowColumnToIndex(row, column);
+    var arrayIndex = this.data.indexOf(index);
+    if (arrayIndex === -1) {
+        return null;
+    }
+    this.data.splice(arrayIndex, 1);
+    return {"row": row, "column": column};
+};
+
+function Shape(seedIntersections) {
+    this.chain = seedIntersections;
+    this.liberties = null;
+    this.isDead = false;
 }
-
-Points.prototype.add = addPoint;
-
-function Shape(seedRow, seedColumn, otherShapes) {
-    this.stones = new Points([seedRow], [seedColumn]);
-    this.liberties = [];
-    this.setLiberties(otherShapes);
-}
-
-function stoneInShape(row, column) {
-}
-
-Shape.prototype.isStone = stoneInShape;
-
-function libertyInShape(row, column) {
-}
-
-Shape.prototype.isLiberty = libertyInShape;
-
-function addToShape(row, column) {
-}
-
-Shape.prototype.add = addToShape;
-
-function setLiberties(otherShapes) {
-}
-
-Shape.prototype.setLiberties = setLiberties;
 
 function onButtonPress(clickEvent) {
     var button = clickEvent.target;
