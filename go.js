@@ -16,9 +16,8 @@ var Turner = (function () {
     return Turner;
 })()
 
-function IntersectionCollection(seedRow, seedColumn) {
+function IntersectionCollection() {
     this.data = [];
-    this.add(seedRow, seedColumn);
 }
 
 IntersectionCollection.rowColumnToIndex = function (row, column) {
@@ -31,7 +30,7 @@ IntersectionCollection.indexToRowColumn = function (index) {
     return {"row": row, "column": column};
 };
 
-IntersectionCollection.prototype.add = function (row, column) {
+IntersectionCollection.prototype.push = function (row, column) {
     var index = IntersectionCollection.rowColumnToIndex(row, column)
     this.data.push(index);
 };
@@ -55,10 +54,14 @@ IntersectionCollection.prototype.remove = function (row, column) {
     return {"row": row, "column": column};
 };
 
-function Shape(seedIntersections) {
-    this.chain = seedIntersections;
-    this.liberties = null;
-    this.isDead = false;
+IntersectionCollection.prototype.get = function () {
+    return this.data.map(IntersectionCollection.indexToRowColumn);
+};
+
+function ShapeCollection() {
+    this.chain = [];
+    this.liberties = [];
+    this.owner = [];
 }
 
 function onButtonPress(clickEvent) {
