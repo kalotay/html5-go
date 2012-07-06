@@ -16,53 +16,39 @@ var Turner = (function () {
     return Turner;
 })()
 
-function IntersectionCollection() {
-    this.data = [];
+function makeIntersectionHashCode(BoardSize) {
+    return function () {
+        return BoardSize * this.row + this.column;
+    };
 }
 
-IntersectionCollection.rowColumnToIndex = function (row, column) {
-    return BOARD_SIZE * row + column;
-};
+function makeIntersectionEquals(BoardSize) {
+    return function (other) {
+        return (this.row === other.row) && (this.column === other.column);
+    };
+}
 
-IntersectionCollection.indexToRowColumn = function (index) {
-    var column = index % BOARD_SIZE;
-    var row = (index - column) / BOARD_SIZE;
-    return {"row": row, "column": column};
-};
+function Intersection(row, column) {
+    this.row = row;
+    this.column = column;
+}
 
-IntersectionCollection.prototype.push = function (row, column) {
-    var index = IntersectionCollection.rowColumnToIndex(row, column)
-    this.data.push(index);
-};
+Intersection.prototype.hashCode = makeIntersectionHashCode(BOARD_SIZE);
+Intersection.prototype.equals = makeIntersectionEquals(BOARD_SIZE);
 
-IntersectionCollection.prototype.isEmpty = function () {
-    return this.data.length === 0;
-};
-
-IntersectionCollection.prototype.contains = function (row, column) {
-    var index = IntersectionCollection.rowColumnToIndex(row, column);
-    return this.data.indexOf(index) !== -1;
-};
-
-IntersectionCollection.prototype.remove = function (row, column) {
-    var index = IntersectionCollection.rowColumnToIndex(row, column);
-    var arrayIndex = this.data.indexOf(index);
-    if (arrayIndex === -1) {
-        return null;
-    }
-    this.data.splice(arrayIndex, 1);
-    return {"row": row, "column": column};
-};
-
-IntersectionCollection.prototype.get = function () {
-    return this.data.map(IntersectionCollection.indexToRowColumn);
-};
-
-function ShapeCollection() {
+function ShapeCollection(turner) {
     this.chain = [];
     this.liberties = [];
     this.owner = [];
+    this.turner = turner;
 }
+
+ShapeCollection.prototype.add = function(row, column) {
+    var newShape = new Intersection(row, column);
+};
+
+ShapeCollection.prototype.removeDead = function(row, column) {
+};
 
 function onButtonPress(clickEvent) {
     var button = clickEvent.target;
