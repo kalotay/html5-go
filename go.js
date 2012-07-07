@@ -104,6 +104,8 @@ ShapeCollection.prototype.removeDead = function(owner) {
     var newShapes = this.shapes.filter(function (shape) {
         return !shape.isSuperceded;
     });
+    this.shapes = newShapes;
+    return [];
 };
 
 //mock object to be implemented
