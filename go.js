@@ -42,14 +42,13 @@ function Shape(owner, row, column) {
     this.isSuperceded = false;
     this.owner = owner;
 
-    chain.add(new Intersection(row, column));
-    this.generateLiberties(row, column);
+    this.chain.add(new Intersection(row, column));
+    this.generateLiberties();
 }
 
-Shape.prototype.interact = function (other) {
+Shape.prototype.interact = function(other) {
     other.liberties = other.liberties.complement(this.chain);
-    if ((this.owner === other.owner)
-        && (!this.liberties.intersect(other.chain).isEmpty())) {
+    if ((this.owner === other.owner) && (!this.liberties.intersection(other.chain).isEmpty())) {
         other.isSuperceded = true;
         this.chain = this.chain.union(other.chain);
         this.liberties = this.liberties.union(other.liberties);
@@ -62,23 +61,32 @@ Shape.prototype.isDead = function () {
 };
 
 function makeGenerateLiberties(BoardSize) {
-    return function(row, column) {
+    return function(intersection) {
+        var row = intersection.row;
+        var column = intersection.column;
+        var liberties = new HashSet();
         if (row > 0) {
-            this.liberties.add(new Intersection(row - 1, column));
+            liberties.add(new Intersection(row - 1, column));
         }
         if (row < (BoardSize - 1)) {
-            this.liberties.add(new Intersection(row + 1, column));
+            liberties.add(new Intersection(row + 1, column));
         }
         if (column > 0) {
-            this.liberties.add(new Intersection(row, column - 1));
+            liberties.add(new Intersection(row, column - 1));
         }
         if (column < (BoardSize - 1)) {
-            this.liberties.add(new Intersection(row, column + 1));
+            liberties.add(new Intersection(row, column + 1));
         }
+        return liberties;
     };
 }
 
-Shape.prototype.generateLiberties = makeGenerateLiberties(BOARD_SIZE);
+Shape.prototype.generateLiberties = function() {
+    var liberties = this.chain.values().map(makeGenerateLiberties(BOARD_SIZE));
+    this.liberties = liberties.reduce(function(accum, lib) {
+        return accum.union(lib);
+    }, new HashSet());
+};
 
 function ShapeCollection() {
     this.shapes = [];
@@ -101,7 +109,7 @@ ShapeCollection.prototype.removeDead = function(owner) {
 //mock object to be implemented
 shapeCollectionMock = {
     "add": function(owner, row, column) {},
-    "removeDead": function(owner) { return [{"row": 0, "column": 0}]; }
+    "removeDead": function(owner) { return []; }
 };
 
 function onButtonPress(clickEvent, row, column, shapeCollection) {
