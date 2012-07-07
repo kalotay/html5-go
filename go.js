@@ -36,38 +36,110 @@ function Intersection(row, column) {
 Intersection.prototype.hashCode = makeIntersectionHashCode(BOARD_SIZE);
 Intersection.prototype.equals = makeIntersectionEquals(BOARD_SIZE);
 
-function ShapeCollection(turner) {
-    this.chain = [];
-    this.liberties = [];
-    this.owner = [];
-    this.turner = turner;
+function Shape(owner, row, column) {
+    this.chain = new HashSet();
+    this.liberties = new HashSet();
+    this.isSuperceded = false;
+    this.owner = owner;
+
+    chain.add(new Intersection(row, column));
+    this.generateLiberties(row, column);
 }
 
-ShapeCollection.prototype.add = function(row, column) {
-    var newShape = new Intersection(row, column);
+Shape.prototype.interact = function (other) {
+    other.liberties = other.liberties.complement(this.chain);
+    if ((this.owner === other.owner)
+        && (!this.liberties.intersect(other.chain).isEmpty())) {
+        other.isSuperceded = true;
+        this.chain = this.chain.union(other.chain);
+        this.liberties = this.liberties.union(other.liberties);
+    }
+    this.liberties = this.liberties.complement(other.chain);
 };
 
-ShapeCollection.prototype.removeDead = function(row, column) {
+Shape.prototype.isDead = function () {
+    return this.liberties.isEmpty();
 };
 
-function onButtonPress(clickEvent) {
+function makeGenerateLiberties(BoardSize) {
+    return function(row, column) {
+        if (row > 0) {
+            this.liberties.add(new Intersection(row - 1, column));
+        }
+        if (row < (BoardSize - 1)) {
+            this.liberties.add(new Intersection(row + 1, column));
+        }
+        if (column > 0) {
+            this.liberties.add(new Intersection(row, column - 1));
+        }
+        if (column < (BoardSize - 1)) {
+            this.liberties.add(new Intersection(row, column + 1));
+        }
+    };
+}
+
+Shape.prototype.generateLiberties = makeGenerateLiberties(BOARD_SIZE);
+
+function ShapeCollection() {
+    this.shapes = [];
+}
+
+ShapeCollection.prototype.add = function(owner, row, column) {
+    var newShape = new Shape(owner, row, column);
+    this.shapes.forEach(Shape.prototype.interact, newShape);
+    this.shapes.push(newShape);
+};
+
+
+ShapeCollection.prototype.removeDead = function(owner) {
+    var killedShapes = []
+    var newShapes = this.shapes.filter(function (shape) {
+        return !shape.isSuperceded;
+    });
+};
+
+//mock object to be implemented
+shapeCollectionMock = {
+    "add": function(owner, row, column) {},
+    "removeDead": function(owner) { return [{"row": 0, "column": 0}]; }
+};
+
+function onButtonPress(clickEvent, row, column, shapeCollection) {
     var button = clickEvent.target;
+    var owner = Turner.get();
+    var toFree;
     if (button.value !== "free") {
         return;
     }
-    button.value = Turner.get();
+    button.value = owner;
+    shapeCollection.add(owner, row, column);
+    toFree = shapeCollection.removeDead(owner);
+    freeButtons(toFree);
     Turner.turn();
 }
 
-function createRow(parentDiv) {
+function makeOnButtonPress(row, shapeCollection) {
+    return function(column) {
+        return function(clickEvent) {
+            onButtonPress(clickEvent, row, column, shapeCollection);
+        };
+    };
+}
+
+function freeButtons(buttonLocations) {
+    buttonLocations.forEach(function(intersection) {
+        document.body.children[intersection.row].children[intersection.column].value = "free";
+    });
+}
+
+function createRow(parentDiv, onButtonPressFactory) {
     var i;
     var newPosition;
     for (i = 0; i < BOARD_SIZE; ++i) {
         newPosition = document.createElement("button");
         newPosition.type = "button";
         newPosition.value = "free";
-        newPosition.className = i.toString(10);
-        newPosition.addEventListener("click", onButtonPress);
+        newPosition.addEventListener("click", onButtonPressFactory(i));
         parentDiv.appendChild(newPosition);
     }
 }
@@ -75,10 +147,11 @@ function createRow(parentDiv) {
 function createBoard() {
     var i;
     var newRow;
+    var shapeCollection = shapeCollectionMock;
     for (i = 0; i < BOARD_SIZE; ++i) {
         newRow = document.createElement("div");
-        newRow.className = i.toString(10);
-        createRow(newRow);
+        onButtonPressFactory = makeOnButtonPress(i, shapeCollection);
+        createRow(newRow, onButtonPressFactory);
         document.body.appendChild(newRow);
     }
 }
