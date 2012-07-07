@@ -107,7 +107,7 @@ ShapeCollection.prototype.removeDead = function(owner) {
     keptShapes = keptShapes.filter(function (shape) {
         var toKeep = (shape.owner === owner) || !shape.isDead();
         if (!toKeep) {
-            killedShapes.push(shape.chain.values());
+            killedShapes = killedShapes.concat(shape.chain.values());
         }
         return toKeep;
     });
@@ -115,7 +115,7 @@ ShapeCollection.prototype.removeDead = function(owner) {
     keptShapes = keptShapes.filter(function (shape) {
         var toKeep = !shape.isDead();
         if (!toKeep) {
-            killedShapes.push(shape.chain.values());
+            killedShapes = killedShapes.concat(shape.chain.values());
         }
         return toKeep;
     });
@@ -183,7 +183,7 @@ function createRow(parentDiv, onButtonPressFactory) {
 function createBoard() {
     var i;
     var newRow;
-    var shapeCollection = shapeCollectionMock;
+    var shapeCollection = new ShapeCollection();
     for (i = 0; i < BOARD_SIZE; ++i) {
         newRow = document.createElement("div");
         onButtonPressFactory = makeOnButtonPress(i, shapeCollection);
