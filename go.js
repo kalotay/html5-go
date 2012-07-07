@@ -104,15 +104,34 @@ ShapeCollection.prototype.removeDead = function(owner) {
     var keptShapes = this.shapes.filter(function (shape) {
         return !shape.isSuperceded;
     });
-    keptShapes = this.shapes.filter(function (shape) {
-        return (shape.owner === owner) || !shape.isDead();
+    keptShapes = keptShapes.filter(function (shape) {
+        var toKeep = (shape.owner === owner) || !shape.isDead();
+        if (!toKeep) {
+            killedShapes.push(shape.chain.values());
+        }
+        return toKeep;
     });
-    keptShapes = this.shapes.filter(function (shape) {
-        return !shape.isDead();
+    recalculateLiberties(keptShapes);
+    keptShapes = keptShapes.filter(function (shape) {
+        var toKeep = !shape.isDead();
+        if (!toKeep) {
+            killedShapes.push(shape.chain.values());
+        }
+        return toKeep;
     });
+    recalculateLiberties(keptShapes);
     this.shapes = keptShapes;
     return killedShapes;
 };
+
+function recalculateLiberties(shapeArray) {
+    shapeArray.forEach(function(shape) {
+        shape.generateLiberties();
+        shapeArray.forEach(function(other) {
+            shape.interact(other);
+        });
+    });
+}
 
 //mock object to be implemented
 shapeCollectionMock = {
@@ -144,7 +163,8 @@ function makeOnButtonPress(row, shapeCollection) {
 
 function freeButtons(buttonLocations) {
     buttonLocations.forEach(function(intersection) {
-        document.body.children[intersection.row].children[intersection.column].value = "free";
+        var row = document.body.children[intersection.row];
+        row.children[intersection.column].value = "free";
     });
 }
 
