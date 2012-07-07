@@ -133,12 +133,6 @@ function recalculateLiberties(shapeArray) {
     });
 }
 
-//mock object to be implemented
-shapeCollectionMock = {
-    "add": function(owner, row, column) {},
-    "removeDead": function(owner) { return []; }
-};
-
 function onButtonPress(clickEvent, row, column, shapeCollection) {
     var button = clickEvent.target;
     var owner = Turner.get();
