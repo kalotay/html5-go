@@ -100,12 +100,18 @@ ShapeCollection.prototype.add = function(owner, row, column) {
 
 
 ShapeCollection.prototype.removeDead = function(owner) {
-    var killedShapes = []
-    var newShapes = this.shapes.filter(function (shape) {
+    var killedShapes = [];
+    var keptShapes = this.shapes.filter(function (shape) {
         return !shape.isSuperceded;
     });
-    this.shapes = newShapes;
-    return [];
+    keptShapes = this.shapes.filter(function (shape) {
+        return (shape.owner === owner) || !shape.isDead();
+    });
+    keptShapes = this.shapes.filter(function (shape) {
+        return !shape.isDead();
+    });
+    this.shapes = keptShapes;
+    return killedShapes;
 };
 
 //mock object to be implemented
