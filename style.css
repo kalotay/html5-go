@@ -1,11 +1,11 @@
-div {
+div#board div {
     margin: 0;
     height: 35px;
 }
 
 button {
     border-radius: 50%;
-    height: inherit;
+    height: 100%;
     width: 35px;
     padding: 0;
     background-image: none;

@@ -159,7 +159,8 @@ function makeOnButtonPress(row, shapeCollection) {
 
 function freeButtons(buttonLocations) {
     buttonLocations.forEach(function(intersection) {
-        var row = document.body.children[intersection.row + 1];
+        var parentDiv = document.getElementById("board");
+        var row = parentDiv.children[intersection.row];
         row.children[intersection.column].value = "free";
     });
 }
@@ -180,10 +181,11 @@ function createBoard() {
     var i;
     var newRow;
     var shapeCollection = new ShapeCollection();
+    var boardDiv = document.getElementById("board");
     for (i = 0; i < BOARD_SIZE; ++i) {
         newRow = document.createElement("div");
         onButtonPressFactory = makeOnButtonPress(i, shapeCollection);
         createRow(newRow, onButtonPressFactory);
-        document.body.appendChild(newRow);
+        boardDiv.appendChild(newRow);
     }
 }
