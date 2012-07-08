@@ -4,11 +4,13 @@ var Turner = (function () {
     var turn = "black";
     var Turner = {};
     Turner.turn = function () {
+        var turnIndicator = document.getElementById("turn-indicator");
         if (turn === "black") {
             turn = "white";
         } else {
             turn = "black";
         }
+        turnIndicator.value = turn;
     };
     Turner.get = function () {
         return turn;
