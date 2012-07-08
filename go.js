@@ -159,7 +159,7 @@ function makeOnButtonPress(row, shapeCollection) {
 
 function freeButtons(buttonLocations) {
     buttonLocations.forEach(function(intersection) {
-        var row = document.body.children[intersection.row];
+        var row = document.body.children[intersection.row + 1];
         row.children[intersection.column].value = "free";
     });
 }
